@@ -42,6 +42,13 @@ export default function Home() {
   //load courses when app started
   useEffect(() => {
     loadCourses();
+
+    const token = localStorage.getItem("token");
+    const username = localStorage.getItem("username");
+    if (token && username) {
+      setToken(token);
+      setAuthenUsername(username);
+    }
   }, []);
 
   //load my courses when logged in
@@ -60,6 +67,8 @@ export default function Home() {
       setAuthenUsername(resp.data.username);
       setUsername("");
       setPassword("");
+      localStorage.setItem("token", resp.data.token);
+      localStorage.setItem("username", resp.data.username);
     } catch (error) {
       //show error message from API
       if (error.response.data) {
@@ -76,6 +85,9 @@ export default function Home() {
     setAuthenUsername(null);
     setToken(null);
     setMyCourses(null);
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
   };
 
   return (
@@ -134,7 +146,7 @@ export default function Home() {
           {!authenUsername && (
             <Text color="dimmed">Please login to see your course(s)</Text>
           )}
-
+          {loadingCourses && <Loader variant="dots" />}
           {myCourses &&
             myCourses.map((course) => (
               <Text key={course.courseNo}>
